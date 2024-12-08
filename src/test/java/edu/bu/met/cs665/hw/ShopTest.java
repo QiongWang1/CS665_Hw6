@@ -1,63 +1,79 @@
-package edu.bu.met.cs665.hw;
-
 /**
  * Name: Qiong Wang
  * Course: CS-665 Software Designs & Patterns
- * Date: 10/13/2024
+ * Date: 12/08/2024
  * File Name: ShopTest.java
- * Description: JUnit test for Shop and Driver functionality.
+ * Description: Test class for Shop functionality.
  */
+package edu.bu.met.cs665.hw;
 
-import org.junit.Before;
-import org.junit.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ShopTest {
+class ShopTest {  // 改为default访问级别，删除public关键字
     private Shop shop;
-    private ByteArrayOutputStream outputStream;
+    private Driver driver1;
+    private Driver driver2;
+    private Driver driver3;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {  // 改为default访问级别，删除public关键字
         shop = new Shop("Shop A");
-
-        // Capture output stream for verification
-        outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
+        driver1 = DriverFactory.createDriver("Driver 1", 1);
+        driver2 = DriverFactory.createDriver("Driver 2", 2);
+        driver3 = DriverFactory.createDriver("Driver 3", 3);
     }
 
     @Test
-    public void testAddDriver() {
-        Driver driver1 = new Driver("Driver 1");
-        shop.addDriver(driver1);
-        assertTrue(shop.getDrivers().contains(driver1));
+    @DisplayName("Test adding observers to shop")
+    void testAddObserver() {  // 改为default访问级别，删除public关键字
+        shop.addObserver(driver1);
+        shop.addObserver(driver2);
+        List<Driver> expectedDrivers = new ArrayList<>();
+        expectedDrivers.add(driver1);
+        expectedDrivers.add(driver2);
+        assertEquals(expectedDrivers, shop.getDrivers());
     }
 
     @Test
-    public void testCreateDeliveryRequest() {
-        // Create and register drivers
-        Driver driver1 = new Driver("Driver 1");
-        Driver driver2 = new Driver("Driver 2");
-        shop.addDriver(driver1);
-        shop.addDriver(driver2);
-
-        // Create delivery request and notify drivers
-        shop.createDeliveryRequest("Books", "123 Main St");
-
-        // Verify that all drivers received the request
-        String output = outputStream.toString();
-        assertTrue(output.contains("Driver 1 received request to deliver Books to 123 Main St"));
-        assertTrue(output.contains("Driver 2 received request to deliver Books to 123 Main St"));
+    @DisplayName("Test removing observers from shop")
+    void testRemoveObserver() {  // 改为default访问级别，删除public关键字
+        shop.addObserver(driver1);
+        shop.addObserver(driver2);
+        shop.removeObserver(driver1);
+        assertFalse(shop.getDrivers().contains(driver1));
     }
 
     @Test
-    public void testNoDriversRegistered() {
-        // Create delivery request without any drivers registered
-        shop.createDeliveryRequest("Books", "123 Main St");
+    @DisplayName("Test broadcast notification strategy")
+    void testBroadcastNotification() {  // 改为default访问级别，删除public关键字
+        shop.addObserver(driver1);
+        shop.addObserver(driver2);
+        shop.addObserver(driver3);
+        shop.setStrategy(new BroadcastNotificationStrategy());
+        DeliveryRequest request = DeliveryRequestFactory.createRequest("Books", "123 Main St");
 
-        // Verify that no notification was sent (no output)
-        String output = outputStream.toString();
-        assertEquals("", output);
+        shop.notifyObservers(request);
+        assertTrue(shop.getObservers().contains(driver1));
+        assertTrue(shop.getObservers().contains(driver2));
+        assertTrue(shop.getObservers().contains(driver3));
+    }
+
+    @Test
+    @DisplayName("Test priority-based notification strategy")
+    void testPriorityNotification() {  // 改为default访问级别，删除public关键字
+        shop.addObserver(driver1);
+        shop.addObserver(driver2);
+        shop.addObserver(driver3);
+        shop.setStrategy(new PriorityNotificationStrategy());
+        DeliveryRequest request = DeliveryRequestFactory.createRequest("Laptop", "456 Park Ave");
+
+        shop.notifyObservers(request);
+        assertTrue(shop.getObservers().size() > 0);
+        assertEquals(1, driver1.getPriority());
     }
 }

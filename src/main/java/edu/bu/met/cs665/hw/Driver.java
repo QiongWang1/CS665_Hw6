@@ -1,23 +1,32 @@
-package edu.bu.met.cs665.hw;
-
 /**
  * Name: Qiong Wang
  * Course: CS-665 Software Designs & Patterns
- * Date: 10/13/2024
+ * Date: 12/08/2024
  * File Name: Driver.java
- * Description: This class represents a driver who receives notifications about delivery requests.
+ * Description: Driver class implementing the Observer interface to receive notifications.
  */
+package edu.bu.met.cs665.hw;
 
-public class Driver {
+public class Driver implements Observer {
     private String name;
+    private int priority;
 
-    public Driver(String name) {
+    public Driver(String name, int priority) {
         this.name = name;
+        this.priority = priority;
     }
 
-    // Method to receive notifications about the delivery request
+    @Override
     public void notify(DeliveryRequest request) {
         System.out.println("Driver " + name + " received request to deliver " +
                 request.getProduct() + " to " + request.getDestination());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }

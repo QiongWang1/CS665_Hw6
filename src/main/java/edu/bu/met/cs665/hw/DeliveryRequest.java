@@ -1,12 +1,11 @@
-package edu.bu.met.cs665.hw;
-
 /**
  * Name: Qiong Wang
  * Course: CS-665 Software Designs & Patterns
- * Date: 10/13/2024
+ * Date: 12/08/2024
  * File Name: DeliveryRequest.java
- * Description: This class represents a delivery request containing the product and destination information.
+ * Description: Class representing a delivery request containing product and destination.
  */
+package edu.bu.met.cs665.hw;
 
 public class DeliveryRequest {
     private String product;
